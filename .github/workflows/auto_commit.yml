@@ -2,29 +2,29 @@ name: Auto Daily Commit
 
 on:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '0 12 * * *' # jalan tiap hari jam 12 UTC
   workflow_dispatch:
 
 jobs:
-  commit:
+  auto-commit:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Git
-        run: |
-          git config --global user.name "ampundeejay"
-          git config --global user.email "fadilreza@icloud.com"
-
-      - name: Update log file
+      - name: Make a commit
         run: |
           echo "Auto commit on $(date)" >> log.txt
-          git add log.txt
-          git commit -m "Auto commit on $(date)" || echo "No changes to commit"
-          git push
+          git config --global user.name 'ampundeejay'
+          git config --global user.email 'fadilreza@icloud.com'
+          git add .
+          git commit -m "Auto commit on $(date)" || echo "Nothing to commit"
+
+      - name: Push changes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.PAT }}
+        run: |
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/ampundeejay/my-7day-streak.git
+          git push origin main
+
